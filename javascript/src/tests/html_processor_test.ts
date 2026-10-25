@@ -481,6 +481,25 @@ describe('HTMLProcessingParser.applyToElement', () => {
     };
     checkEqual(model, inputHTML, expectedHTML);
   });
+  it('should not insert ZWSPs right before existing ZWSPs.', () => {
+    const inputHTML = '<p>xyza\u200Bbca</p>';
+    const expectedHTML = `<p style="${style}">xyza\u200Bbca</p>`;
+    const model = {
+      UW3: {a: 1001}, // means "should separate right after 'a'".
+    };
+    checkEqual(model, inputHTML, expectedHTML);
+  });
+  it('should not add separators when applied twice.', () => {
+    const inputDOM = parseFromString(
+      '<p>今日は天気です。明日は晴れるでしょう。</p>'
+    );
+    const element = inputDOM.querySelector('p') as unknown as HTMLElement;
+    const parser = new HTMLProcessingParser(jaModel);
+    parser.applyToElement(element);
+    const once = element.innerHTML;
+    parser.applyToElement(element);
+    expect(element.innerHTML).toBe(once);
+  });
   it('should not insert ZWSPs before or after whitespace.', () => {
     const inputHTML = '<p>xyza\nabca</p>';
     // Separate right before 'a', except after the '\n'.

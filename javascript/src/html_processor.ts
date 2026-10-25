@@ -532,9 +532,16 @@ export class HTMLProcessor {
     assert(boundaries[boundaries.length - 1] < text.length);
 
     // Don't insert separators before or after whitespace, as in Python and Java.
+    // Don't insert one right before an existing ZWSP either. The ZWSP is
+    // already a break opportunity, and the separator would duplicate it.
     const adjustedBoundaries = paragraph
       .excludeForcedOpportunities(boundaries)
-      .filter(i => !/\s/.test(text[i - 1]) && !/\s/.test(text[i]));
+      .filter(
+        i =>
+          !/\s/.test(text[i - 1]) &&
+          !/\s/.test(text[i]) &&
+          text.charCodeAt(i) !== ZWSP_CODEPOINT
+      );
 
     // Add a sentinel to help iterating.
     adjustedBoundaries.push(text.length + 1);

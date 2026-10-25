@@ -50,6 +50,15 @@ describe('Web Components', () => {
       budouxElement.textContent = '明日は晴れるかな？';
     }));
 
+  it('should not add separators when attached again.', () => {
+    const budouxElement = window.document.createElement('budoux-ja');
+    budouxElement.textContent = '今日は良い天気です。';
+    window.document.body.appendChild(budouxElement);
+    budouxElement.remove();
+    window.document.body.appendChild(budouxElement);
+    expect(budouxElement.innerHTML).toBe('今日は\u200B良い\u200B天気です。');
+  });
+
   it('should work with HTML inputs.', () => {
     const budouxElement = window.document.createElement('budoux-ja');
     budouxElement.appendChild(window.document.createTextNode('昨日は'));
